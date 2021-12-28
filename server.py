@@ -62,7 +62,6 @@ def game():
     global players
     team1_name = players.get(list(players.keys())[0]).recv(buffer_size).decode()
     print(team1_name)
-    time.sleep(10)
     players.get(list(players.keys())[0]).send(start_msg(team1_name, "bb").encode())
 
 server_socket = tcp_socket()
@@ -73,4 +72,6 @@ while True:
         clients_thread.start()
         broadcasts_thread.join()
         clients_thread.join()
+        time.sleep(10)
         game()
+        time.sleep(10)
