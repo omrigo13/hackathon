@@ -37,3 +37,19 @@ def listen_tcp(server_socket):
     while len(players) < 2:
         conn, addr = server_socket.accept()
         players[addr] = conn
+
+def start_msg(team1_name, team2_name):
+    player1 = "Player 1: " + team1_name + "\n"
+    player2 = "Player 2: " + team2_name + "\n"
+    question = math_problem()
+    return "Welcome to Quick Maths.\n" + player1 + player2 + "==\nPlease answer the following question as fast as you can:\n" \
+                                                             "How much is " + question + "?"
+
+def end_msg(team1_name, team1_answer, team2_name, team2_answer, answer):
+    correct_answer = "Game over!\nThe correct answer was " + answer + "!\n\n"
+    winner_msg = "Congratulations to the winner: "
+    if(team1_answer == answer) and team2_answer != answer:
+        return correct_answer + winner_msg + team1_name
+    elif (team1_answer != answer) and team2_answer == answer:
+        return correct_answer + winner_msg + team2_name
+    return "nobody answered, the game finished with a draw"
