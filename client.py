@@ -1,6 +1,7 @@
 import socket
 import struct
 import msvcrt
+import sys
 import time
 import keyboard
 from msvcrt import getch
@@ -51,13 +52,15 @@ while True:
         # print(answer.decode())
         # tcp_client_socket.close()
         #  Windows
-        key= keyboard.read_key()
-        print(key)
+        # key = keyboard.read_key()  # in my python interpreter, this captures "enter up"
+        key = sys.stdin.readline()[0]
         tcp_client_socket.send(key.encode())
         print("sent key")
         try:
+            print("do i get here")
             SummaryMessage = tcp_client_socket.recv(1024)
             print(SummaryMessage.decode())
+
             print("\nServer disconnected, listening for offer requests...")
         except:
             print("Server Disconnected")
