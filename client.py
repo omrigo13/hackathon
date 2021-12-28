@@ -20,8 +20,8 @@ while True:
         tcp_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         msg, address = broadcast_socket.recvfrom(buffer_size)
         print("Received offer from " + address[0] + ", attempting to connect...")
-        cookie, type, tcp_server_port = struct.unpack('IBH', msg)
-        if cookie != magic_cookie or type != msg_type:
+        cookie, msg_type, tcp_server_port = struct.unpack('IBH', msg)
+        if cookie != magic_cookie or msg_type != msg_type:
             print("wrong broadcast message format")
         continue
         tcp_client_socket.connect((address[0], tcp_server_port))
