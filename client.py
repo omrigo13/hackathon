@@ -43,4 +43,5 @@ while True:
     except Exception as e:
         print(e)
         tcp_client_socket.close()
-        print("fail")
+        continue
+        # print("fail")
