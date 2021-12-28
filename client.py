@@ -60,7 +60,7 @@ while True:
             print("do i get here")
             SummaryMessage = tcp_client_socket.recv(1024)
             print(SummaryMessage.decode())
-
+            tcp_client_socket.close()
             print("\nServer disconnected, listening for offer requests...")
         except:
             print("Server Disconnected")
