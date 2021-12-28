@@ -33,7 +33,9 @@ while True:
         msg_received = tcp_client_socket.recv(buffer_size)
         print(msg_received.decode())
         reads, _, _ = select([sys.stdin, tcp_client_socket], [], [], timeout)
-        tcp_client_socket.send(sys.stdin.readline().encode())
+        if len(reads) > 0 and reads[0] == sys.stdin:
+            question_answer = sys.stdin.readline()
+            tcp_client_socket.send(question_answer.encode())
         answer = tcp_client_socket.recv(buffer_size)
         print(answer.decode())
         tcp_client_socket.close()

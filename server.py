@@ -67,7 +67,7 @@ def game():
     time.sleep(5)
     players.get(list(players.keys())[0]).send(start_msg(team1_name, "bb").encode())
     print("sent start message")
-    reads,_,_ =select([list(players.keys())[0],None],[],[], 10)
+    # reads,_,_ =select([list(players.keys())[0],0],[],[], 10)
     ans = players.get(list(players.keys())[0]).recv(buffer_size).decode()[:-1]
     print(ans)
 server_socket = tcp_socket()
