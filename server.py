@@ -31,3 +31,9 @@ def udp_broadcast():
         msg = struct.pack('IBH', magic_cookie, msg_type, tcp_server_port)
         udp_server_socket.sendto(msg, ('<broadcast>', udp_port))
         time.sleep(1)
+
+def listen_tcp(server_socket):
+    global players
+    while len(players) < 2:
+        conn, addr = server_socket.accept()
+        players[addr] = conn
