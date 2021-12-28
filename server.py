@@ -62,16 +62,35 @@ def end_msg(team1_name, team1_answer, team2_name, team2_answer, answer):
     return "nobody answered, the game finished with a draw"
 
 def game():
-    global players
-    team1_name = players.get(list(players.keys())[0]).recv(buffer_size).decode()
-    print(team1_name)
-    time.sleep(5)
-    players.get(list(players.keys())[0]).send(start_msg(team1_name, "bb").encode())
-    print("sent start message")
-    reads,_,_  = select([list(players.keys())[0],list(players.keys())[0]],[],[], timeout)
-    if len(reads) > 0:
-        ans = players.get(list(players.keys())[0]).recv(buffer_size).decode()[:-1]
-    print(ans)
+    try:
+        global players
+        team1_socket = players.get(list(players.keys())[0])
+        # team2_socket = players.get(list(players.keys())[1])
+        team1_name = team1_socket.recv(buffer_size).decode()
+        # team2_name = team2_socket.recv(buffer_size).decode()
+        print(team1_name)
+        # print(team2_name)
+        time.sleep(10)
+        start = start_msg(team1_name, team1_name)
+        team1_socket.send(start.encode())
+        # team2_socket.send(start.encode())
+        print("sent start message")
+        reads,_,_  = select([team1_socket, team1_socket],[],[], timeout)
+        if len(reads) > 0:
+            if reads[0] == team1_socket:
+                ans = team1_socket.recv(buffer_size).decode()[:-1]
+            # else:
+            #     ans = team2_socket.recv(buffer_size).decode()[:-1]
+        print(ans)
+        team1_socket.close()
+        # team2_socket.close()
+        players = {}
+    except:
+        team1_socket.close()
+        # team2_socket.close()
+        print("errorrrrr")
+        players = {}
+
 server_socket = tcp_socket()
 while True:
         broadcasts_thread = Thread(target=udp_broadcast)
@@ -80,6 +99,6 @@ while True:
         clients_thread.start()
         broadcasts_thread.join()
         clients_thread.join()
-        time.sleep(10)
+        # time.sleep(10)
         game()
-        time.sleep(10)
+        # time.sleep(10)
