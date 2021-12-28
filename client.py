@@ -2,7 +2,9 @@ import socket
 import struct
 import msvcrt
 import sys
+import threading
 import time
+import tty
 import keyboard
 from msvcrt import getch
 
@@ -14,6 +16,7 @@ udp_port = 13117
 buffer_size = 1024
 timeout = 10
 team_name = "blabla"
+
 
 
 
@@ -30,6 +33,7 @@ while True:
         msg, address = broadcast_socket.recvfrom(buffer_size)
         print("Received offer from " + address[0] + ", attempting to connect...")
         tcp_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        tcp_client_socket.settimeout(10)
         cookie, msg_type, tcp_server_port = struct.unpack('IBH', msg)
         if cookie != magic_cookie or msg_type != msg_type:
             print("wrong broadcast message format")
@@ -37,6 +41,7 @@ while True:
         tcp_client_socket.connect((address[0], tcp_server_port))
         tcp_client_socket.send(team_name.encode())
         print("sent name")
+        tcp_client_socket.settimeout(socket.getdefaulttimeout())
         msg_received = tcp_client_socket.recv(buffer_size)
         print(msg_received.decode())
         print("i got here1")
@@ -53,17 +58,23 @@ while True:
         # tcp_client_socket.close()
         #  Windows
         # key = keyboard.read_key()  # in my python interpreter, this captures "enter up"
-        key = sys.stdin.readline()[0]
-        tcp_client_socket.send(key.encode())
-        print("sent key")
-        try:
-            print("do i get here")
-            SummaryMessage = tcp_client_socket.recv(1024)
-            print(SummaryMessage.decode())
-            tcp_client_socket.close()
-            print("\nServer disconnected, listening for offer requests...")
-        except:
-            print("Server Disconnected")
+        reads,_,_ = select([sys.stdin, tcp_client_socket],[],[],10)
+        if len(reads) > 0 and reads[0] == sys.stdin:
+            ans = sys.stdin.readline()[0]
+        # now = time.time()
+        # if time.time()<now+10:
+        #     key = sys.stdin.readline()[0]
+        #     tcp_client_socket.send(key.encode())
+        #     print("sent key")
+
+        # answer = msvcrt.getch()
+        # answer = answer.decode('utf-8')
+        #
+        # tcp_client_socket.send(answer.encode())
+        #
+        data = tcp_client_socket.recv(buffer_size).decode()  # receive response
+        print(data)
+
     except Exception as e:
         print(e)
         tcp_client_socket.close()
