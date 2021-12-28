@@ -11,6 +11,7 @@ magic_cookie = 0xabcddcba
 msg_type = 0x2
 udp_port = 13117
 buffer_size = 1024
+timeout = 10
 players = {}
 
 def math_problem():
@@ -67,7 +68,7 @@ def game():
     time.sleep(5)
     players.get(list(players.keys())[0]).send(start_msg(team1_name, "bb").encode())
     print("sent start message")
-    reads,_,_ =select([list(players.keys())[0],list(players.keys())[0]],[],[], 10)
+    reads,_,_  = select([list(players.keys())[0],list(players.keys())[0]],[],[], timeout)
     if len(reads) > 0:
         ans = players.get(list(players.keys())[0]).recv(buffer_size).decode()[:-1]
     print(ans)
