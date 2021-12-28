@@ -4,6 +4,8 @@ from scapy.arch import get_if_addr, struct
 import time
 from threading import Thread
 
+from select import select
+
 tcp_server_port = 2040
 magic_cookie = 0xabcddcba
 msg_type = 0x2
@@ -62,9 +64,11 @@ def game():
     global players
     team1_name = players.get(list(players.keys())[0]).recv(buffer_size).decode()
     print(team1_name)
+    time.sleep(5)
     players.get(list(players.keys())[0]).send(start_msg(team1_name, "bb").encode())
     print("sent start message")
-    ans = players.get(list(players.keys())[0]).recv(buffer_size).decode()
+    reads,_,_ =select([list(players.keys())[0],None],[],[], 10)
+    ans = players.get(list(players.keys())[0]).recv(buffer_size).decode()[:-1]
     print(ans)
 server_socket = tcp_socket()
 while True:
