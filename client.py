@@ -1,10 +1,14 @@
 import socket
 import struct
+import sys
+
+from select import select
 
 magic_cookie = 0xabcddcba
 msg_type = 0x2
 udp_port = 13117
 buffer_size = 1024
+timeout = 10
 team_name = "blabla"
 
 print("Client started, listening for offer requests...")
@@ -28,6 +32,8 @@ while True:
         tcp_client_socket.send(team_name.encode())
         msg_received = tcp_client_socket.recv(buffer_size)
         print(msg_received.decode())
+        reads, _, _ = select([sys.stdin, tcp_client_socket], [], [], timeout)
+        tcp_client_socket.send(sys.stdin.readline().encode())
         tcp_client_socket.close()
 
     except:
