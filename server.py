@@ -11,13 +11,13 @@ magic_cookie = 0xabcddcba
 msg_type = 0x2
 udp_port = 13117
 buffer_size = 1024
-timeout = 10
+timeout = 10000
 players = {}
 
 def math_problem():
     num1 = randint(0,5)
     num2 = randint(0,4)
-    return str(num1) + "+" + str(num2)
+    return str(num1) + "+" + str(num2), num1 + num2
 
 def tcp_socket():
     # server_address = get_if_addr('eth1')
@@ -48,9 +48,9 @@ def listen_tcp(server_socket):
 def start_msg(team1_name, team2_name):
     player1 = "Player 1: " + team1_name + "\n"
     player2 = "Player 2: " + team2_name + "\n"
-    question = math_problem()
+    question, answer = math_problem()
     return "Welcome to Quick Maths.\n" + player1 + player2 + "==\nPlease answer the following question as fast as you can:\n" \
-                                                             "How much is " + question + "?"
+                                                             "How much is " + question + "?", str(answer)
 
 def end_msg(team1_name, team1_answer, team2_name, team2_answer, answer):
     correct_answer = "Game over!\nThe correct answer was " + answer + "!\n\n"
@@ -71,21 +71,29 @@ def game():
         print(team1_name)
         # print(team2_name)
         time.sleep(10)
-        start = start_msg(team1_name, team1_name)
+        start, math_answer = start_msg(team1_name, team1_name)
         team1_socket.send(start.encode())
         # team2_socket.send(start.encode())
         print("sent start message")
         reads,_,_  = select([team1_socket, team1_socket],[],[], timeout)
+        ans1 = ""
         if len(reads) > 0:
-            if reads[0] == team1_socket:
-                ans = team1_socket.recv(buffer_size).decode()[:-1]
+        #     if reads[0] == team1_socket:
+            ans1 = team1_socket.recv(buffer_size).decode()
+        # ans2 = team2_socket.recv(buffer_size).decode()[:-1]
             # else:
             #     ans = team2_socket.recv(buffer_size).decode()[:-1]
-        print(ans)
+        print(ans1)
+        print(math_answer)
+        end = end_msg(team1_name, ans1, team1_name, team1_name, math_answer)
+        print(end)
+        team1_socket.send(end.encode())
+        # team2_socket.send(end.encode())
         team1_socket.close()
         # team2_socket.close()
         players = {}
-    except:
+    except Exception as e:
+        print(e)
         team1_socket.close()
         # team2_socket.close()
         print("errorrrrr")
@@ -101,4 +109,4 @@ while True:
         clients_thread.join()
         # time.sleep(10)
         game()
-        # time.sleep(10)
+        time.sleep(10)
