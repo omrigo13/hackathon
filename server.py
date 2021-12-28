@@ -63,8 +63,9 @@ def game():
     team1_name = players.get(list(players.keys())[0]).recv(buffer_size).decode()
     print(team1_name)
     players.get(list(players.keys())[0]).send(start_msg(team1_name, "bb").encode())
-    time.sleep(10)
-
+    print("sent start message")
+    ans = players.get(list(players.keys())[0]).recv(buffer_size).decode()
+    print(ans)
 server_socket = tcp_socket()
 while True:
         broadcasts_thread = Thread(target=udp_broadcast)
