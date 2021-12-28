@@ -18,8 +18,8 @@ def math_problem():
 
 def tcp_socket():
     # server_address = get_if_addr('eth1')
-    # server_address = "192.168.0.112"
-    server_address = "192.168.0.103"
+    server_address = "192.168.0.112"
+    # server_address = "192.168.0.103"
     server_socket = socket(AF_INET, SOCK_STREAM)
     server_socket.bind((str(server_address), tcp_server_port))
     server_socket.listen()
@@ -63,6 +63,7 @@ def game():
     team1_name = players.get(list(players.keys())[0]).recv(buffer_size).decode()
     print(team1_name)
     players.get(list(players.keys())[0]).send(start_msg(team1_name, "bb").encode())
+    time.sleep(10)
 
 server_socket = tcp_socket()
 while True:

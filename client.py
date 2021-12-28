@@ -34,8 +34,11 @@ while True:
         print(msg_received.decode())
         reads, _, _ = select([sys.stdin, tcp_client_socket], [], [], timeout)
         tcp_client_socket.send(sys.stdin.readline().encode())
+        answer = tcp_client_socket.recv(buffer_size)
+        print(answer.decode())
         tcp_client_socket.close()
 
-    except:
+    except Exception as e:
+        print(e)
         tcp_client_socket.close()
         print("fail")
