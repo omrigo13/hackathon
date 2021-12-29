@@ -14,13 +14,14 @@ timeout = 10
 team_name = "ro"
 gameover =False
 tcp_socket= None
-def __listen_keyboard():
+
+def __listen_keyboard(): #thread waiting for keyboard
     key_press = sys.stdin.readline()
     if not gameover:
         tcp_socket.send(key_press.encode())
 
 
-def __listen_gameover():
+def __listen_gameover(): #thread waiting foe msg from server
     winner_message = tcp_socket.recv(buffer_size)
     gameover = True
     print(winner_message.decode())
@@ -48,10 +49,7 @@ while True:
         msg_received = tcp_client_socket.recv(buffer_size) # receive math problem question
 
         print(colored(msg_received.decode(), "magenta"))
-        # key = sys.stdin.readline()[0]
-        # tcp_client_socket.send(key.encode()) # send to the server the question answer
-        # end_msg = tcp_client_socket.recv(buffer_size) # receive end game message including the winners team name
-        # print(end_msg.decode())
+
         try:
             tcp_socket = tcp_client_socket
             key_listen = Thread(target=__listen_keyboard )
