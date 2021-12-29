@@ -1,6 +1,8 @@
 import socket
 import struct
 import sys
+import time
+
 from termcolor import colored
 
 magic_cookie = 0xabcddcba
@@ -30,17 +32,14 @@ while True:
 
         tcp_client_socket.connect((address[0], tcp_server_port))
         tcp_client_socket.send(team_name.encode())
-        print("sent name")
         tcp_client_socket.settimeout(socket.getdefaulttimeout())
         msg_received = tcp_client_socket.recv(buffer_size)
         print(colored(msg_received.decode(), "magenta"))
-        print("i got here1")
         key = sys.stdin.readline()[0]
         tcp_client_socket.send(key.encode())
-        print("sent key")
         end_msg = tcp_client_socket.recv(buffer_size)
         print(end_msg.decode())
-        print ("Server disconnected, listening for offer requests...")
-    except Exception as e:
-        print(e)
+        print(colored("Server disconnected, listening for offer requests...", "yellow"))
+        time.sleep(5)
+    except:
         tcp_client_socket.close()
