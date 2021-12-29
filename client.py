@@ -2,6 +2,7 @@ import socket
 import struct
 import sys
 import time
+from threading import Thread
 
 from termcolor import colored
 
@@ -11,6 +12,18 @@ udp_port = 13117
 buffer_size = 1024
 timeout = 10
 team_name = "noa without o"
+gameover =False
+
+def __listen_keyboard(tcp_socket):
+    key_press = sys.stdin.readline()[0]
+    if not gameover:
+        tcp_socket.tcp.send(key_press.encode())
+
+
+def __listen_gameover(tcp_socket):
+    winner_message = tcp_socket.tcp.recv(buffer_size)
+    gameover = True
+    print(winner_message.decode())
 
 print(colored("Client started, listening for offer requests...", "white"))
 
@@ -33,12 +46,24 @@ while True:
         tcp_client_socket.connect((address[0], tcp_server_port)) # make socket to connect to the server using tcp
         tcp_client_socket.send(team_name.encode()) # send team name
         msg_received = tcp_client_socket.recv(buffer_size) # receive math problem question
+
         print(colored(msg_received.decode(), "magenta"))
-        key = sys.stdin.readline()[0]
-        tcp_client_socket.send(key.encode()) # send to the server the question answer
-        end_msg = tcp_client_socket.recv(buffer_size) # receive end game message including the winners team name
-        print(end_msg.decode())
+        # key = sys.stdin.readline()[0]
+        # tcp_client_socket.send(key.encode()) # send to the server the question answer
+        # end_msg = tcp_client_socket.recv(buffer_size) # receive end game message including the winners team name
+        # print(end_msg.decode())
+
+        key_listen = Thread(target=__listen_keyboard)
+        game_listen = Thread(target=__listen_gameover)
+
+        key_listen.start()
+        game_listen.start()
+
+        game_listen.join()
+
+        key_listen._Thread_stop()
+
         print(colored("Server disconnected, listening for offer requests...", "yellow"))
-        time.sleep(5)
+        time.sleep(1)
     except:
         tcp_client_socket.close()
