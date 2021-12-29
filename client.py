@@ -29,9 +29,9 @@ while True:
         if cookie != magic_cookie or msg_type != msg_type:
             print(colored("wrong broadcast message format", "red"))
             continue
-
-        tcp_client_socket.connect((address[0], tcp_server_port))
-        tcp_client_socket.send(team_name.encode())
+        if address[0] == "172.18.0.40":
+            tcp_client_socket.connect(("172.1.0.40", tcp_server_port))
+            tcp_client_socket.send(team_name.encode())
         tcp_client_socket.settimeout(socket.getdefaulttimeout())
         msg_received = tcp_client_socket.recv(buffer_size)
         print(colored(msg_received.decode(), "magenta"))
