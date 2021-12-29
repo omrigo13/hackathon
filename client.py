@@ -14,7 +14,6 @@ timeout = 10
 team_name = "ro"
 gameover =False
 tcp_socket= None
-
 def __listen_keyboard(): #thread waiting for keyboard
     key_press = sys.stdin.readline()
     if not gameover:
