@@ -21,7 +21,9 @@ def math_problem():
 
 def tcp_socket():
     # server_address = get_if_addr('eth1')
-    server_address = "192.168.0.112"
+    # server_address = "172.18.0.40"
+    server_address = gethostbyname(gethostname())
+    # server_address = "192.168.0.112"
     # server_address = "192.168.0.103"
     server_socket = socket(AF_INET, SOCK_STREAM)
     server_socket.bind((str(server_address), tcp_server_port))
