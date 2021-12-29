@@ -49,14 +49,14 @@ def udp_broadcast():
     udp_server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     udp_server_socket.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 
-    while len(players) < 1:
+    while len(players) < 2:
         msg = struct.pack('IBH', magic_cookie, msg_type, tcp_server_port)
         udp_server_socket.sendto(msg, ('<broadcast>', udp_port))
         time.sleep(1)
 
 def listen_tcp(server_socket):
     global players
-    while len(players) < 1:
+    while len(players) < 2:
         conn, addr = server_socket.accept()
         players[addr] = conn
 
@@ -80,39 +80,37 @@ def game():
     try:
         global players
         team1_socket = players.get(list(players.keys())[0])
-        # team2_socket = players.get(list(players.keys())[1])
+        team2_socket = players.get(list(players.keys())[1])
         team1_name = team1_socket.recv(buffer_size).decode()
-        # team2_name = team2_socket.recv(buffer_size).decode()
+        team2_name = team2_socket.recv(buffer_size).decode()
         print(team1_name)
-        # print(team2_name)
+        print(team2_name)
         time.sleep(10)
-        start, math_answer = start_msg(team1_name, team1_name)
+        start, math_answer = start_msg(team1_name, team2_name)
         team1_socket.send(start.encode())
-        # team2_socket.send(start.encode())
+        team2_socket.send(start.encode())
         print("sent start message")
-        reads,_,_  = select([team1_socket, team1_socket],[],[], timeout)
+        reads,_,_  = select([team1_socket, team2_socket],[],[], timeout)
         ans1 = ""
+        ans2 = ""
         if len(reads) > 0:
-        #     if reads[0] == team1_socket:
-            ans1 = team1_socket.recv(buffer_size).decode()
-        # ans2 = team2_socket.recv(buffer_size).decode()[:-1]
-            # else:
-            #     ans = team2_socket.recv(buffer_size).decode()[:-1]
-        print(ans1)
-        print(math_answer)
-        end = end_msg(team1_name, ans1, team1_name, team1_name, math_answer)
-        print(end)
+            if reads[0] == team1_socket:
+                ans1 = team1_socket.recv(buffer_size).decode()
+            elif reads[0] == team2_socket:
+                ans2 = team2_socket.recv(buffer_size).decode()
+
+        end = end_msg(team1_name, ans1, team2_name, ans2, math_answer)
         team1_socket.send(end.encode())
-        # team2_socket.send(end.encode())
+        team2_socket.send(end.encode())
         team1_socket.close()
-        # team2_socket.close()
+        team2_socket.close()
         players = {}
-    except Exception as e:
-        print(e)
+    except :
         team1_socket.close()
-        # team2_socket.close()
-        print("errorrrrr")
+        team2_socket.close()
         players = {}
+    # print(colored("Server started, listening on IP address " + str(server_address), "blue"))
+
 
 server_socket = tcp_socket()
 while True:
