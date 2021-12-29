@@ -62,7 +62,12 @@ def end_msg(team1_name, team1_answer, team2_name, team2_answer, answer, answered
     correct_answer = "Game over!\nThe correct answer was " + answer + "!\n\n"
     winner_msg = "Congratulations to the winner: "
     if(team1_answer == answer) and team2_answer != answer and answered_first == 1:
-        return correct_answer + winner_msg + team1_name
+        try :
+            team1_answer_int = int(team1_answer)
+            if team1_answer_int<=9 and team1_answer_int>= 0:
+                return correct_answer + winner_msg + team1_name
+        except:
+            return correct_answer + winner_msg + team2_name
     elif (team1_answer != answer) and team2_answer == answer and answered_first == 2:
         return correct_answer + winner_msg + team2_name
     elif team1_answer != answer and answered_first == 1:
@@ -91,12 +96,14 @@ def game():
         ans2 = ""
         if len(reads) > 0:
             if reads[0] == team1_socket:
-                ans1 = team1_socket.recv(buffer_size).decode()
+                ans1 = team1_socket.recv(buffer_size).decode()[:-1]
                 first_answered = 1
             elif reads[0] == team2_socket:
-                ans2 = team2_socket.recv(buffer_size).decode()
+                ans2 = team2_socket.recv(buffer_size).decode()[:-1]
                 first_answered = 2
 
+        print(type(ans1))
+        print(type(ans2))
         print(first_answered)
         end = end_msg(team1_name, ans1, team2_name, ans2, math_answer, first_answered)
         team1_socket.send(end.encode())
