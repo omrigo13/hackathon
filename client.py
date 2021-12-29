@@ -15,14 +15,12 @@ team_name = "noa without o"
 gameover =False
 tcp_socket= None
 def __listen_keyboard():
-    global gameover
     key_press = sys.stdin.readline()[0]
     if not gameover:
         tcp_socket.send(key_press.encode())
 
 
 def __listen_gameover():
-    global gameover
     winner_message = tcp_socket.recv(buffer_size)
     gameover = True
     print(winner_message.decode())
@@ -65,7 +63,6 @@ while True:
         except :
             pass
         tcp_client_socket.close()
-        global gameover
         gameover = False
         print(colored("Server disconnected, listening for offer requests...", "yellow"))
         time.sleep(1)
