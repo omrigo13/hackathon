@@ -5,6 +5,7 @@ import time
 from threading import Thread
 
 from select import select
+from termcolor import colored
 
 tcp_server_port = 2040
 magic_cookie = 0xabcddcba
@@ -13,6 +14,18 @@ udp_port = 13117
 buffer_size = 1024
 timeout = 10000
 players = {}
+
+print(colored("asdfasdfasdfdsf", "cyan", attrs=['bold']))
+print(colored("asdfasdfasdfdsf", "cyan"))
+print(colored("asdfasdfasdfdsf", "cyan", attrs=['underline']))
+print(colored("asdfasdfasdfdsf", "cyan", attrs=['reverse']))
+print(colored("asdfasdfasdfdsf", "magenta", attrs=['underline']))
+print(colored("asdfasdfasdfdsf", "white", attrs=['underline']))
+print(colored("asdfasdfasdfdsf", "blue", attrs=['underline']))
+print(colored("asdfasdfasdfdsf", "yellow", attrs=['underline']))
+print(colored("asdfasdfasdfdsf", "green", attrs=['underline']))
+print(colored("asdfasdfasdfdsf", "red", attrs=['underline']))
+print(colored("asdfasdfasdfdsf", "grey", attrs=['underline']))
 
 def math_problem():
     num1 = randint(0,5)
