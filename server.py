@@ -3,7 +3,7 @@ from socket import *
 from scapy.arch import get_if_addr, struct
 import time
 from threading import Thread
-
+import sys
 from select import select
 from termcolor import colored
 
@@ -12,20 +12,11 @@ magic_cookie = 0xabcddcba
 msg_type = 0x2
 udp_port = 13117
 buffer_size = 1024
-timeout = 10000
+timeout = 10
 players = {}
+first_answered = 0
 
-print(colored("asdfasdfasdfdsf", "cyan", attrs=['bold']))
-print(colored("asdfasdfasdfdsf", "cyan"))
-print(colored("asdfasdfasdfdsf", "cyan", attrs=['underline']))
-print(colored("asdfasdfasdfdsf", "cyan", attrs=['reverse']))
-print(colored("asdfasdfasdfdsf", "magenta", attrs=['underline']))
-print(colored("asdfasdfasdfdsf", "white", attrs=['underline']))
-print(colored("asdfasdfasdfdsf", "blue", attrs=['underline']))
-print(colored("asdfasdfasdfdsf", "yellow", attrs=['underline']))
-print(colored("asdfasdfasdfdsf", "green", attrs=['underline']))
-print(colored("asdfasdfasdfdsf", "red", attrs=['underline']))
-print(colored("asdfasdfasdfdsf", "grey", attrs=['underline']))
+# print(sys.argv)
 
 def math_problem():
     num1 = randint(0,5)
@@ -67,18 +58,23 @@ def start_msg(team1_name, team2_name):
     return "Welcome to Quick Maths.\n" + player1 + player2 + "==\nPlease answer the following question as fast as you can:\n" \
                                                              "How much is " + question + "?", str(answer)
 
-def end_msg(team1_name, team1_answer, team2_name, team2_answer, answer):
+def end_msg(team1_name, team1_answer, team2_name, team2_answer, answer, answered_first):
     correct_answer = "Game over!\nThe correct answer was " + answer + "!\n\n"
     winner_msg = "Congratulations to the winner: "
-    if(team1_answer == answer) and team2_answer != answer:
+    if(team1_answer == answer) and team2_answer != answer and answered_first == 1:
         return correct_answer + winner_msg + team1_name
-    elif (team1_answer != answer) and team2_answer == answer:
+    elif (team1_answer != answer) and team2_answer == answer and answered_first == 2:
         return correct_answer + winner_msg + team2_name
+    elif team1_answer != answer and answered_first == 1:
+        return correct_answer + winner_msg + team2_name
+    elif team2_answer != answer and answered_first == 2:
+        return correct_answer + winner_msg + team1_name
     return "nobody answered, the game finished with a draw"
 
 def game():
     try:
         global players
+        global first_answered
         team1_socket = players.get(list(players.keys())[0])
         team2_socket = players.get(list(players.keys())[1])
         team1_name = team1_socket.recv(buffer_size).decode()
@@ -96,19 +92,24 @@ def game():
         if len(reads) > 0:
             if reads[0] == team1_socket:
                 ans1 = team1_socket.recv(buffer_size).decode()
+                first_answered = 1
             elif reads[0] == team2_socket:
                 ans2 = team2_socket.recv(buffer_size).decode()
+                first_answered = 2
 
-        end = end_msg(team1_name, ans1, team2_name, ans2, math_answer)
+        print(first_answered)
+        end = end_msg(team1_name, ans1, team2_name, ans2, math_answer, first_answered)
         team1_socket.send(end.encode())
         team2_socket.send(end.encode())
         team1_socket.close()
         team2_socket.close()
         players = {}
+        first_answered = 0
     except :
         team1_socket.close()
         team2_socket.close()
         players = {}
+        first_answered = 0
     # print(colored("Server started, listening on IP address " + str(server_address), "blue"))
 
 
