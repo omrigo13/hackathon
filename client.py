@@ -17,7 +17,7 @@ tcp_socket= None
 def __listen_keyboard():
     key_press = sys.stdin.readline()[0]
     if not gameover:
-        tcp_socket.tcp.send(key_press.encode())
+        tcp_socket.send(key_press.encode())
 
 
 def __listen_gameover():
