@@ -13,14 +13,14 @@ buffer_size = 1024
 timeout = 10
 team_name = "noa without o"
 gameover =False
-
-def __listen_keyboard(tcp_socket):
+tcp_socket= None
+def __listen_keyboard():
     key_press = sys.stdin.readline()[0]
     if not gameover:
         tcp_socket.tcp.send(key_press.encode())
 
 
-def __listen_gameover(tcp_socket):
+def __listen_gameover():
     winner_message = tcp_socket.tcp.recv(buffer_size)
     gameover = True
     print(winner_message.decode())
@@ -52,16 +52,18 @@ while True:
         # tcp_client_socket.send(key.encode()) # send to the server the question answer
         # end_msg = tcp_client_socket.recv(buffer_size) # receive end game message including the winners team name
         # print(end_msg.decode())
+        try:
+            tcp_socket = tcp_client_socket
+            key_listen = Thread(target=__listen_keyboard )
+            game_listen = Thread(target=__listen_gameover)
+            key_listen.start()
+            game_listen.start()
 
-        key_listen = Thread(target=__listen_keyboard)
-        game_listen = Thread(target=__listen_gameover)
+            game_listen.join()
 
-        key_listen.start()
-        game_listen.start()
-
-        game_listen.join()
-
-        key_listen._Thread_stop()
+            key_listen._Thread_stop()
+        except :
+            print("problem with threads")
 
         print(colored("Server disconnected, listening for offer requests...", "yellow"))
         time.sleep(1)
