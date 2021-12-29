@@ -42,19 +42,11 @@ while True:
         if cookie != magic_cookie or msg_type != msg_type:
             print(colored("wrong broadcast message format", "red"))
             continue
-<<<<<<< HEAD
-        if address[0] == "172.18.0.40":
-            tcp_client_socket.connect(("172.1.0.40", tcp_server_port))
-            tcp_client_socket.send(team_name.encode())
-        tcp_client_socket.settimeout(socket.getdefaulttimeout())
-        msg_received = tcp_client_socket.recv(buffer_size)
-=======
 
         tcp_client_socket.connect((address[0], tcp_server_port)) # make socket to connect to the server using tcp
         tcp_client_socket.send(team_name.encode()) # send team name
         msg_received = tcp_client_socket.recv(buffer_size) # receive math problem question
 
->>>>>>> 8b5204606ce8dad3e0b7cd53cb6f4744052ac311
         print(colored(msg_received.decode(), "magenta"))
         # key = sys.stdin.readline()[0]
         # tcp_client_socket.send(key.encode()) # send to the server the question answer
