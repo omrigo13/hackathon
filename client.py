@@ -21,7 +21,7 @@ def __listen_keyboard():
 
 
 def __listen_gameover():
-    winner_message = tcp_socket.tcp.recv(buffer_size)
+    winner_message = tcp_socket.recv(buffer_size)
     gameover = True
     print(winner_message.decode())
 
