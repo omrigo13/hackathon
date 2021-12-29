@@ -11,11 +11,11 @@ msg_type = 0x2
 udp_port = 13117
 buffer_size = 1024
 timeout = 10
-team_name = "noa without o"
+team_name = "ro"
 gameover =False
 tcp_socket= None
 def __listen_keyboard():
-    key_press = sys.stdin.readline()[0]
+    key_press = sys.stdin.readline()
     if not gameover:
         tcp_socket.send(key_press.encode())
 
@@ -60,12 +60,10 @@ while True:
             game_listen.start()
 
             game_listen.join()
-
-            key_listen._Thread_stop()
-        except Exception as e :
-            print("problem with threads")
-            print(e)
-
+        except :
+            pass
+        tcp_client_socket.close()
+        gameover = False
         print(colored("Server disconnected, listening for offer requests...", "yellow"))
         time.sleep(1)
     except:
