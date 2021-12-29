@@ -1,3 +1,4 @@
+import math
 from random import randint
 from socket import *
 from scapy.arch import get_if_addr, struct
@@ -15,7 +16,7 @@ buffer_size = 1024
 timeout = 10
 players = {}
 first_answered = 0
-
+fastest_team = [0,math.inf]
 
 # print(sys.argv)
 
@@ -28,7 +29,7 @@ def tcp_socket():
     # server_address = get_if_addr('eth1')
     # server_address = "172.18.0.40"
     server_address = gethostbyname(gethostname())
-    # server_address = "192.168.0.112"
+    # server_address = "192.168.0.111"
     # server_address = "192.168.0.103"
     server_socket = socket(AF_INET, SOCK_STREAM)
     server_socket.bind((str(server_address), tcp_server_port))
@@ -46,11 +47,17 @@ def udp_broadcast(): # make udp connection for sending broadcast messages and le
         udp_server_socket.sendto(msg, ('<broadcast>', udp_port))
         time.sleep(1)
 
+
 def listen_tcp(server_socket):
     global players
     while len(players) < 2: # accept players to the game and update the connection between them to the server
         conn, addr = server_socket.accept()
         players[addr] = conn
+
+
+def fastest_team_msg():
+    return "the fastest team so far is team: " + fastest_team[0]
+
 
 def start_msg(team1_name, team2_name):
     player1 = "Player 1: " + team1_name + "\n"
@@ -59,29 +66,37 @@ def start_msg(team1_name, team2_name):
     return "Welcome to Quick Maths.\n" + player1 + player2 + "==\nPlease answer the following question as fast as you can:\n" \
                                                              "How much is " + question + "?", str(answer)
 
-def end_msg(team1_name, team1_answer, team2_name, team2_answer, answer, answered_first):
+
+def end_msg(team1_name, team1_answer, team2_name, team2_answer, answer, answered_first, times):
+    global fastest_team
     correct_answer = "Game over!\nThe correct answer was " + answer + "!\n\n"
     winner_msg = "Congratulations to the winner: "
     if(team1_answer == answer) and team2_answer != answer and answered_first == 1:
         try :
             team1_answer_int = int(team1_answer)
-            if team1_answer_int<=9 and team1_answer_int>= 0:
-                return correct_answer + winner_msg + team1_name
+            if 9 >= team1_answer_int >= 0:
+                if times < fastest_team[1]:
+                    fastest_team[0] = team1_name
+                    fastest_team[1] = times
+                return correct_answer + winner_msg + team1_name +'\n'+fastest_team_msg()+'\n'
         except:
-            return correct_answer + winner_msg + team2_name
+            return correct_answer + winner_msg + team2_name+'\n'+fastest_team_msg()+'\n'
 
     elif (team1_answer != answer) and team2_answer == answer and answered_first == 2:
         try :
             team2_answer_int = int(team2_answer)
-            if team2_answer_int<=9 and team2_answer_int>= 0:
-                return correct_answer + winner_msg + team2_name
+            if 9 >= team2_answer_int >= 0:
+                if times < fastest_team[1]:
+                    fastest_team[0] = team2_name
+                    fastest_team[1] = times
+                return correct_answer + winner_msg + team2_name+'\n'+fastest_team_msg()+'\n'
         except:
-            return correct_answer + winner_msg + team1_name
+            return correct_answer + winner_msg + team1_name+'\n'+fastest_team_msg()+'\n'
 
     elif team1_answer != answer and answered_first == 1:
-        return correct_answer + winner_msg + team2_name
+        return correct_answer + winner_msg + team2_name+'\n'+fastest_team_msg()+'\n'
     elif team2_answer != answer and answered_first == 2:
-        return correct_answer + winner_msg + team1_name
+        return correct_answer + winner_msg + team1_name+'\n'+fastest_team_msg()+'\n'
     return "nobody answered, the game finished with a draw"
 
 def game():
@@ -99,21 +114,22 @@ def game():
         team1_socket.send(start.encode())
         team2_socket.send(start.encode())
         print("sent start message")
+        times=time.time()
         reads,_,_  = select([team1_socket, team2_socket],[],[], timeout)
         ans1 = ""
         ans2 = ""
         if len(reads) > 0:
             if reads[0] == team1_socket:
                 ans1 = team1_socket.recv(buffer_size).decode()[:-1]
+                times = time.time()-times
                 first_answered = 1
             elif reads[0] == team2_socket:
                 ans2 = team2_socket.recv(buffer_size).decode()[:-1]
+                times = time.time() - times
                 first_answered = 2
 
-        print(type(ans1))
-        print(type(ans2))
-        print(first_answered)
-        end = end_msg(team1_name, ans1, team2_name, ans2, math_answer, first_answered)
+
+        end = end_msg(team1_name, ans1, team2_name, ans2, math_answer, first_answered, times)
         team1_socket.send(end.encode())
         team2_socket.send(end.encode())
         team1_socket.close()
