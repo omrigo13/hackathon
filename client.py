@@ -6,6 +6,8 @@ import time
 # import tty
 import keyboard
 import select
+from termcolor import colored
+
 magic_cookie = 0xabcddcba
 msg_type = 0x2
 udp_port = 13117
@@ -16,7 +18,7 @@ team_name = "blabla"
 
 
 
-print("Client started, listening for offer requests...")
+print(colored("Client started, listening for offer requests...", "white"))
 
 # open a socket for broadcast message
 broadcast_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -27,11 +29,11 @@ broadcast_socket.bind(('', udp_port))
 while True:
     try:
         msg, address = broadcast_socket.recvfrom(buffer_size)
-        print("Received offer from " + address[0] + ", attempting to connect...")
+        print(colored("Received offer from " + address[0] + ", attempting to connect...", "green"))
         tcp_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         cookie, msg_type, tcp_server_port = struct.unpack('IBH', msg)
         if cookie != magic_cookie or msg_type != msg_type:
-            print("wrong broadcast message format")
+            print(colored("wrong broadcast message format", "red"))
             continue
 
         tcp_client_socket.connect((address[0], tcp_server_port))
@@ -39,7 +41,7 @@ while True:
         print("sent name")
         tcp_client_socket.settimeout(socket.getdefaulttimeout())
         msg_received = tcp_client_socket.recv(buffer_size)
-        print(msg_received.decode())
+        print(colored(msg_received.decode(), "magenta"))
         print("i got here1")
 
         # reads,_,_ = select([sys.stdin, tcp_client_socket],[],[],10)
