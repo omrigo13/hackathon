@@ -16,6 +16,7 @@ timeout = 10
 players = {}
 first_answered = 0
 
+
 # print(sys.argv)
 
 def math_problem():
@@ -68,8 +69,15 @@ def end_msg(team1_name, team1_answer, team2_name, team2_answer, answer, answered
                 return correct_answer + winner_msg + team1_name
         except:
             return correct_answer + winner_msg + team2_name
+
     elif (team1_answer != answer) and team2_answer == answer and answered_first == 2:
-        return correct_answer + winner_msg + team2_name
+        try :
+            team2_answer_int = int(team2_answer)
+            if team2_answer_int<=9 and team2_answer_int>= 0:
+                return correct_answer + winner_msg + team2_name
+        except:
+            return correct_answer + winner_msg + team1_name
+
     elif team1_answer != answer and answered_first == 1:
         return correct_answer + winner_msg + team2_name
     elif team2_answer != answer and answered_first == 2:
