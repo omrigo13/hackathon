@@ -15,7 +15,7 @@ team_name = "ro"
 gameover =False
 tcp_socket= None
 def __listen_keyboard(): #thread waiting for keyboard
-    key_press = sys.stdin.readline()
+    key_press = sys.stdin.readline().replace('\n',"")
     if not gameover:
         tcp_socket.send(key_press.encode())
 

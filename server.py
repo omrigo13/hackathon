@@ -120,11 +120,11 @@ def game():
         ans2 = ""
         if len(reads) > 0:
             if reads[0] == team1_socket:
-                ans1 = team1_socket.recv(buffer_size).decode()[:-1]
+                ans1 = team1_socket.recv(buffer_size).decode()
                 times = time.time()-times
                 first_answered = 1
             elif reads[0] == team2_socket:
-                ans2 = team2_socket.recv(buffer_size).decode()[:-1]
+                ans2 = team2_socket.recv(buffer_size).decode()
                 times = time.time() - times
                 first_answered = 2
 
