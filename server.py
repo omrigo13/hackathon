@@ -26,9 +26,9 @@ def math_problem():
     return str(num1) + "+" + str(num2), num1 + num2
 
 def tcp_socket():
-    # server_address = get_if_addr('eth1')
+    server_address = get_if_addr('eth1')
     # server_address = "172.18.0.40"
-    server_address = gethostbyname(gethostname())
+    # server_address = gethostbyname(gethostname())
     # server_address = "192.168.0.111"
     # server_address = "192.168.0.103"
     server_socket = socket(AF_INET, SOCK_STREAM)
