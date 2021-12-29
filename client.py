@@ -60,11 +60,9 @@ while True:
             game_listen.start()
 
             game_listen.join()
-
-            key_listen._Thread_stop()
-        except Exception as e :
-            print("problem with threads")
-            print(e)
+            key_listen.join()
+        except :
+            pass
 
         print(colored("Server disconnected, listening for offer requests...", "yellow"))
         time.sleep(1)
