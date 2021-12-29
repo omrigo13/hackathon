@@ -1,11 +1,6 @@
 import socket
 import struct
 import sys
-import threading
-import time
-# import tty
-import keyboard
-import select
 from termcolor import colored
 
 magic_cookie = 0xabcddcba
@@ -13,10 +8,7 @@ msg_type = 0x2
 udp_port = 13117
 buffer_size = 1024
 timeout = 10
-team_name = "blabla"
-
-
-
+team_name = "noa without o"
 
 print(colored("Client started, listening for offer requests...", "white"))
 
@@ -43,49 +35,12 @@ while True:
         msg_received = tcp_client_socket.recv(buffer_size)
         print(colored(msg_received.decode(), "magenta"))
         print("i got here1")
-
-        # reads,_,_ = select([sys.stdin, tcp_client_socket],[],[],10)
-        # if len(reads) > 0 and reads[0] == sys.stdin:
-        #     ans = sys.stdin.readline()[0]
-        #     tcp_client_socket.send(ans.encode())
-        # else:
-        #     ans = ""
-        #     tcp_client_socket.send(ans.encode())
-
-        # data = tcp_client_socket.recv(buffer_size).decode()  # receive response
-        # print(data)
-        # read_sockets = [sys.stdin, tcp_client_socket]
-        # old_info_stdin = termios.tcgetattr(sys.stdin)
-        # tty.setcbreak(sys.stdin.fileno())
-        # readable_sockets = select.select.select(read_sockets, [], [])[0]
-        # if readable_sockets[0] is sys.stdin: # If we need to read input from the keyboard
-        #     # TODO: check if need to support messages before server welcom message
-
-        #     user_answer = sys.stdin.read(1) # Read one digit in a non blocking way
-        #     print( user_answer) # Print the digit to the screen
-
-        #     # if (user_answer.isdigit()): # If the input is really a digit
-        #     #     digit_value = ord(user_answer) - ord('0')
-        #     #     clientSocket.send(digit_value.to_bytes(1, ENDIAN)) # Send the input to the answer as it's value and not in ascii
-        #     tcp_client_socket.send(user_answer.encode())
-        # termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_info_stdin)
-        fd1, fd2 = tcp_client_socket.fileno(), sys.stdin.fileno()
-        try:
-            rlist, wlist, xlist = select.select([fd1, fd2], [], [], 10)
-            if len(rlist) > 0:
-                hd = rlist[0]
-                if hd == fd2:
-                    user_input = input('')
-                    tcp_client_socket.send(user_input.encode())
-        except:
-            print('Call to select function failed')
-        finally:
-            summary = tcp_client_socket.recv(buffer_size)
-            print(summary.decode())
-
+        key = sys.stdin.readline()[0]
+        tcp_client_socket.send(key.encode())
+        print("sent key")
+        end_msg = tcp_client_socket.recv(buffer_size)
+        print(end_msg.decode())
         print ("Server disconnected, listening for offer requests...")
     except Exception as e:
         print(e)
         tcp_client_socket.close()
-        # continue
-        # print("fail")
