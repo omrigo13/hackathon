@@ -15,7 +15,7 @@ team_name = "noa without o"
 gameover =False
 tcp_socket= None
 def __listen_keyboard():
-    key_press = sys.stdin.readline()[0]
+    key_press = sys.stdin.readline()
     if not gameover:
         tcp_socket.send(key_press.encode())
 
