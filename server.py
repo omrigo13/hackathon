@@ -141,7 +141,8 @@ def game():
         team2_socket.close()
         players = {}
         first_answered = 0
-    # print(colored("Server started, listening on IP address " + str(server_address), "blue"))
+        print(colored("teams are disconnected", "red"))
+        print(colored("Server started, listening on IP address " + str(server_address), "blue"))
 
 
 server_socket = tcp_socket()

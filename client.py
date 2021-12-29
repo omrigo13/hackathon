@@ -59,9 +59,12 @@ while True:
             game_listen.join()
         except :
             pass
+            print(colored("threads", "red"))
+
         tcp_client_socket.close()
         gameover = False
         print(colored("Server disconnected, listening for offer requests...", "yellow"))
         time.sleep(1)
     except:
         tcp_client_socket.close()
+        print(colored("server disconnected", "red"))
