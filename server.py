@@ -56,7 +56,7 @@ def listen_tcp(server_socket):
 
 
 def fastest_team_msg():
-    return "the fastest team so far is team: " + fastest_team[0] +"with time of "+str(fastest_team[1])
+    return "the fastest team so far is team: " + fastest_team[0] +" with time of "+str(fastest_team[1])
 
 
 def start_msg(team1_name, team2_name):
