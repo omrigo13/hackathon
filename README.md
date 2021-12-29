@@ -1,6 +1,7 @@
-# hackathon
+# 💻hackathon💻
 
 ### Intro to Nets 2021 Hackathon: Quick Maths ⓶+⓶-①=③👑
+🍕🍕🍕
 
 <img src="https://steamuserimages-a.akamaihd.net/ugc/911293473580328863/DCB12F76423E5226064ABC302B326C2F527A42DF/" height="200"/> 
 
