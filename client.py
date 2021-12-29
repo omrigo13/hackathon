@@ -2,6 +2,7 @@ import socket
 import struct
 import sys
 import time
+from threading import Thread
 
 from termcolor import colored
 
@@ -11,6 +12,18 @@ udp_port = 13117
 buffer_size = 1024
 timeout = 10
 team_name = "noa without o"
+gameover =False
+tcp_socket= None
+def __listen_keyboard():
+    key_press = sys.stdin.readline()[0]
+    if not gameover:
+        tcp_socket.send(key_press.encode())
+
+
+def __listen_gameover():
+    winner_message = tcp_socket.recv(buffer_size)
+    gameover = True
+    print(winner_message.decode())
 
 print(colored("Client started, listening for offer requests...", "white"))
 
@@ -22,24 +35,46 @@ broadcast_socket.bind(('', udp_port))
 
 while True:
     try:
-        msg, address = broadcast_socket.recvfrom(buffer_size)
+        msg, address = broadcast_socket.recvfrom(buffer_size) # get the tcp port and ip of the server by the udp broadcast
         print(colored("Received offer from " + address[0] + ", attempting to connect...", "green"))
         tcp_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         cookie, msg_type, tcp_server_port = struct.unpack('IBH', msg)
         if cookie != magic_cookie or msg_type != msg_type:
             print(colored("wrong broadcast message format", "red"))
             continue
+<<<<<<< HEAD
         if address[0] == "172.18.0.40":
             tcp_client_socket.connect(("172.1.0.40", tcp_server_port))
             tcp_client_socket.send(team_name.encode())
         tcp_client_socket.settimeout(socket.getdefaulttimeout())
         msg_received = tcp_client_socket.recv(buffer_size)
+=======
+
+        tcp_client_socket.connect((address[0], tcp_server_port)) # make socket to connect to the server using tcp
+        tcp_client_socket.send(team_name.encode()) # send team name
+        msg_received = tcp_client_socket.recv(buffer_size) # receive math problem question
+
+>>>>>>> 8b5204606ce8dad3e0b7cd53cb6f4744052ac311
         print(colored(msg_received.decode(), "magenta"))
-        key = sys.stdin.readline()[0]
-        tcp_client_socket.send(key.encode())
-        end_msg = tcp_client_socket.recv(buffer_size)
-        print(end_msg.decode())
+        # key = sys.stdin.readline()[0]
+        # tcp_client_socket.send(key.encode()) # send to the server the question answer
+        # end_msg = tcp_client_socket.recv(buffer_size) # receive end game message including the winners team name
+        # print(end_msg.decode())
+        try:
+            tcp_socket = tcp_client_socket
+            key_listen = Thread(target=__listen_keyboard )
+            game_listen = Thread(target=__listen_gameover)
+            key_listen.start()
+            game_listen.start()
+
+            game_listen.join()
+
+            key_listen._Thread_stop()
+        except Exception as e :
+            print("problem with threads")
+            print(e)
+
         print(colored("Server disconnected, listening for offer requests...", "yellow"))
-        time.sleep(5)
+        time.sleep(1)
     except:
         tcp_client_socket.close()
