@@ -22,7 +22,7 @@ broadcast_socket.bind(('', udp_port))
 
 while True:
     try:
-        msg, address = broadcast_socket.recvfrom(buffer_size)
+        msg, address = broadcast_socket.recvfrom(buffer_size) # get the tcp port and ip of the server by the udp broadcast
         print(colored("Received offer from " + address[0] + ", attempting to connect...", "green"))
         tcp_client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         cookie, msg_type, tcp_server_port = struct.unpack('IBH', msg)
@@ -30,14 +30,13 @@ while True:
             print(colored("wrong broadcast message format", "red"))
             continue
 
-        tcp_client_socket.connect((address[0], tcp_server_port))
-        tcp_client_socket.send(team_name.encode())
-        tcp_client_socket.settimeout(socket.getdefaulttimeout())
-        msg_received = tcp_client_socket.recv(buffer_size)
+        tcp_client_socket.connect((address[0], tcp_server_port)) # make socket to connect to the server using tcp
+        tcp_client_socket.send(team_name.encode()) # send team name
+        msg_received = tcp_client_socket.recv(buffer_size) # receive math problem question
         print(colored(msg_received.decode(), "magenta"))
         key = sys.stdin.readline()[0]
-        tcp_client_socket.send(key.encode())
-        end_msg = tcp_client_socket.recv(buffer_size)
+        tcp_client_socket.send(key.encode()) # send to the server the question answer
+        end_msg = tcp_client_socket.recv(buffer_size) # receive end game message including the winners team name
         print(end_msg.decode())
         print(colored("Server disconnected, listening for offer requests...", "yellow"))
         time.sleep(5)

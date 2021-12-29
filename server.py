@@ -44,19 +44,19 @@ def tcp_socket():
     print(colored("Server started, listening on IP address " + str(server_address), "blue"))
     return server_socket
 
-def udp_broadcast():
+def udp_broadcast(): # make udp connection for sending broadcast messages and let clients connect to the server
     udp_server_socket = socket(AF_INET, SOCK_DGRAM)
     udp_server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
     udp_server_socket.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 
-    while len(players) < 2:
+    while len(players) < 2: # still send broadcast messages until you found two clients to start a game with
         msg = struct.pack('IBH', magic_cookie, msg_type, tcp_server_port)
         udp_server_socket.sendto(msg, ('<broadcast>', udp_port))
         time.sleep(1)
 
 def listen_tcp(server_socket):
     global players
-    while len(players) < 2:
+    while len(players) < 2: # accept players to the game and update the connection between them to the server
         conn, addr = server_socket.accept()
         players[addr] = conn
 
