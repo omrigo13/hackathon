@@ -97,7 +97,7 @@ def end_msg(team1_name, team1_answer, team2_name, team2_answer, answer, answered
         return correct_answer + winner_msg + team2_name+'\n'+fastest_team_msg()+'\n'
     elif team2_answer != answer and answered_first == 2:
         return correct_answer + winner_msg + team1_name+'\n'+fastest_team_msg()+'\n'
-    return "nobody answered, the game finished with a draw"
+    return "nobody answered, the game finished with a draw" +'\n'+fastest_team_msg()+'\n'
 
 def game():
     try:
