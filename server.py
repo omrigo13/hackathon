@@ -41,7 +41,7 @@ def tcp_socket():
     server_socket = socket(AF_INET, SOCK_STREAM)
     server_socket.bind((str(server_address), tcp_server_port))
     server_socket.listen()
-    print("Server started, listening on IP address " + str(server_address))
+    print(colored("Server started, listening on IP address " + str(server_address), "blue"))
     return server_socket
 
 def udp_broadcast():
@@ -87,6 +87,7 @@ def game():
         # print(team2_name)
         time.sleep(10)
         start, math_answer = start_msg(team1_name, team1_name)
+        start = colored(start, "red")
         team1_socket.send(start.encode())
         # team2_socket.send(start.encode())
         print("sent start message")
@@ -101,6 +102,7 @@ def game():
         print(ans1)
         print(math_answer)
         end = end_msg(team1_name, ans1, team1_name, team1_name, math_answer)
+        end = colored(end, "magenta")
         print(end)
         team1_socket.send(end.encode())
         # team2_socket.send(end.encode())
